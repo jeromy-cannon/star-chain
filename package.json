@@ -1,12 +1,13 @@
 {
-  "name": "project_1",
+  "name": "star-chain",
   "version": "1.0.0",
   "description": "This project creates a Blockchain application to store data into the blocks",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Udacity - jose.morales@udacity.com",
+  "author": "Jeromy Cannon",
+  "repository": "github:rayelnigma/star-chain",
   "license": "ISC",
   "dependencies": {
     "bitcoinjs-lib": "^4.0.3",
