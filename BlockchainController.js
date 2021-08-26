@@ -41,15 +41,21 @@ class BlockchainController {
     // Endpoint that allows user to request Ownership of a Wallet address (POST Endpoint)
     requestOwnership() {
         this.app.post("/requestValidation", async (req, res) => {
+            //console.log(req);
+            console.log(req.body);
             if(req.body.address) {
                 const address = req.body.address;
+                console.log('address: ', address);
                 const message = await this.blockchain.requestMessageOwnershipVerification(address);
                 if(message){
+                    console.log('message:', message);
                     return res.status(200).json(message);
                 } else {
+                    console.log('error');
                     return res.status(500).send("An error happened!");
                 }
             } else {
+                console.log('bad body');
                 return res.status(500).send("Check the Body Parameter!");
             }
         });
@@ -63,6 +69,10 @@ class BlockchainController {
                 const message = req.body.message;
                 const signature = req.body.signature;
                 const star = req.body.star;
+                console.log('address: ',address);
+                console.log('message: ',message);
+                console.log('signature: ',signature);
+                console.log('star: ',star);
                 try {
                     let block = await this.blockchain.submitStar(address, message, signature, star);
                     if(block){
@@ -84,6 +94,7 @@ class BlockchainController {
         this.app.get("/block/hash/:hash", async (req, res) => {
             if(req.params.hash) {
                 const hash = req.params.hash;
+                console.log('hash: ',hash);
                 let block = await this.blockchain.getBlockByHash(hash);
                 if(block){
                     return res.status(200).json(block);
@@ -102,6 +113,7 @@ class BlockchainController {
         this.app.get("/blocks/:address", async (req, res) => {
             if(req.params.address) {
                 const address = req.params.address;
+                console.log('address: ',address);
                 try {
                     let stars = await this.blockchain.getStarsByWalletAddress(address);
                     if(stars){
