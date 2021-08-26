@@ -44,15 +44,18 @@
 		},
 		{
 			"name": "requestValidation",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
 			"request": {
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"address\" : \"this-is-my-hash-address\"\r\n}",
+					"raw": "{\r\n    \"address\": \"this-is-my-hash-address\"\r\n}",
 					"options": {
 						"raw": {
-							"language": "text"
+							"language": "json"
 						}
 					}
 				},
@@ -71,12 +74,28 @@
 		},
 		{
 			"name": "submitStar",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// \"message\": \"<WALLET_ADRESS>:${new Date().getTime().toString().slice(0,-3)}:starRegistry\",\r",
+							"pm.variables.set('wallet-address','tb1qz5jy0fp8fc0peczjh7gwjgz2l3jal5dgakrg9v');\r",
+							"pm.variables.set('timestamp', new Date().getTime().toString().slice(0,-3));\r",
+							"pm.variables.set('message', pm.variables.get('wallet-address') + ':'+ pm.variables.get('timestamp') + ':starRegistry');\r",
+							"console.log('message: ', pm.variables.get('message'));\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"address\": \"my-hash\",\r\n    \"message\": \"my-message\",\r\n    \"signature\": \"my-signature\",\r\n    \"star\": \"my-star\"\r\n}",
+					"raw": "{\r\n    \"address\": \"my-hash\",\r\n    \"message\": \"{{message}}\",\r\n    \"signature\": \"use a Wallet (Electrum or Bitcoin Core for example) to sign the message\",\r\n    \"star\": {\r\n         \"dec\": \"68° 52' 56.9\",\r\n         \"ra\": \"16h 29m 1.0s\",\r\n         \"story\": \"Testing the story 4\"\r\n     }\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -127,7 +146,23 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"url": null
+				"url": {
+					"raw": "localhost:8000/blocks/:address",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"blocks",
+						":address"
+					],
+					"variable": [
+						{
+							"key": "address",
+							"value": "my-address"
+						}
+					]
+				}
 			},
 			"response": []
 		}
