@@ -64,7 +64,8 @@ class Blockchain {
     _addBlock(block) {
         let self = this;
         return new Promise(async (resolve, reject) => {
-           
+           this.chain.push(block);
+           this.height++;
         });
     }
 

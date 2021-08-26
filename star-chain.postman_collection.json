@@ -1,0 +1,52 @@
+{
+	"info": {
+		"_postman_id": "835ebdd8-bfaa-4af4-b05f-fc4b59a07e70",
+		"name": "star-chain",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "getBlockByHeight",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8000/block/height/:height",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"block",
+						"height",
+						":height"
+					],
+					"variable": [
+						{
+							"key": "height",
+							"value": "0"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "height",
+			"value": ""
+		}
+	]
+}
