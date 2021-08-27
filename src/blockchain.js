@@ -44,8 +44,9 @@ class Blockchain {
      * Utility method that return a Promise that will resolve with the height of the chain
      */
     getChainHeight() {
+        let self = this;
         return new Promise((resolve, reject) => {
-            resolve(this.height);
+            resolve(self.height);
         });
     }
 
@@ -64,14 +65,14 @@ class Blockchain {
     _addBlock(block) {
         let self = this;
         return new Promise(async (resolve, reject) => {
-            block.height = this.chain.length;
+            block.height = self.chain.length;
             block.time = new Date().getTime().toString().slice(0, -3);
-            if (this.chain.length > 0) {
-                block.previousBlockHash = this.chain[this.chain.length - 1].hash;
+            if (self.chain.length > 0) {
+                block.previousBlockHash = self.chain[self.chain.length - 1].hash;
             }
             block.hash = SHA256(JSON.stringify(block)).toString();
-            this.chain.push(block);
-            this.height++;
+            self.chain.push(block);
+            self.height++;
         });
     }
 
@@ -121,8 +122,8 @@ class Blockchain {
                 'signature': signature,
                 'star': star
             });
-            this._addBlock(newBlock);
-            resolve(this.chain[this.chain.length - 1]);
+            self._addBlock(newBlock);
+            resolve(self.chain[self.chain.length - 1]);
         });
     }
 
@@ -135,7 +136,7 @@ class Blockchain {
     getBlockByHash(hash) {
         let self = this;
         return new Promise((resolve, reject) => {
-            this.chain.forEach((block) => {
+            self.chain.forEach((block) => {
                 if (hash === block.hash) {
                     resolve(block);
                 }
@@ -172,7 +173,16 @@ class Blockchain {
         let self = this;
         let stars = [];
         return new Promise((resolve, reject) => {
-
+            this.chain.slice(1).forEach((block) => {
+                let blockDataPromise = block.getBData();
+                blockDataPromise.then(blockData => {
+                    console.log('address: ', address, ', blockData: ', blockData, ', blockAddress: ', blockData.address);
+                    if(address === blockData.address){
+                        stars.push(blockData.star);
+                    }
+                });
+            });
+            resolve(stars);
         });
     }
 

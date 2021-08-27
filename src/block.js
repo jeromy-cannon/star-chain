@@ -18,7 +18,10 @@ class Block {
     constructor(data) {
         this.hash = null;                                           // Hash of the block
         this.height = 0;                                            // Block Height (consecutive number of each block)
+        console.log('----------------°, ', Buffer.from(JSON.stringify('°')).toString('hex'));
+        console.log('zzzzz:' , hex2ascii(Buffer.from(JSON.stringify('°')).toString('hex')));
         this.body = Buffer.from(JSON.stringify(data)).toString('hex');   // Will contain the transactions stored in the block, by default it will encode the data
+        console.log(hex2ascii(this.body));
         this.time = 0;                                              // Timestamp for the Block creation
         this.previousBlockHash = null;                              // Reference to the previous Block Hash
     }
@@ -39,12 +42,12 @@ class Block {
         let self = this;
         return new Promise((resolve, reject) => {
             // Save in auxiliary variable the current block hash
-            let oldHash = this.hash;
-            this.hash = null;
+            let oldHash = self.hash;
+            self.hash = null;
 
             // Recalculate the hash of the Block
-            let currentHash = SHA256(JSON.stringify(this).toString());
-            this.hash = oldHash;
+            let currentHash = SHA256(JSON.stringify(self).toString());
+            self.hash = oldHash;
 
             // Comparing if the hashes changed
             if (oldHash === currentHash) {
@@ -71,12 +74,12 @@ class Block {
         let self = this;
         return new Promise((resolve, reject) => {
             // Getting the encoded data saved in the Block
-            let encodedData = this.body;
+            let encodedData = self.body;
 
             // Decoding the data to retrieve the JSON representation of the object
             let decodedData = hex2ascii(encodedData);
 
-            if (this.height > 0) {
+            if (self.height > 0) {
                 // Parse the data to an object to be retrieve.
                 let jsonObject = JSON.parse(decodedData);
 
