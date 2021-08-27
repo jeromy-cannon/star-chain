@@ -68,11 +68,13 @@ class Blockchain {
             block.height = self.chain.length;
             block.time = new Date().getTime().toString().slice(0, -3);
             if (self.chain.length > 0) {
+                // TODO: use getChainHeight()
                 block.previousBlockHash = self.chain[self.chain.length - 1].hash;
             }
             block.hash = SHA256(JSON.stringify(block)).toString();
             self.chain.push(block);
             self.height++;
+            // TODO: add resolve/reject logic
         });
     }
 
@@ -86,7 +88,7 @@ class Blockchain {
      */
     requestMessageOwnershipVerification(address) {
         return new Promise((resolve) => {
-
+            // TODO: generate 'message'
         });
     }
 
@@ -107,6 +109,7 @@ class Blockchain {
      * @param {*} signature 
      * @param {*} star 
      */
+    // TODO: submitStar verify message and reject logic
     submitStar(address, message, signature, star) {
         let self = this;
         return new Promise(async (resolve, reject) => {
@@ -136,6 +139,7 @@ class Blockchain {
     getBlockByHash(hash) {
         let self = this;
         return new Promise((resolve, reject) => {
+            // TODO: switch to filter
             self.chain.forEach((block) => {
                 if (hash === block.hash) {
                     resolve(block);
@@ -169,9 +173,11 @@ class Blockchain {
      * Remember the star should be returned decoded.
      * @param {*} address 
      */
+    // TODO: reverify stars by wallet address is working
     getStarsByWalletAddress(address) {
         let self = this;
         let stars = [];
+        // TODO: should I create a Star class?
         return new Promise((resolve, reject) => {
             this.chain.slice(1).forEach((block) => {
                 let blockDataPromise = block.getBData();
@@ -192,6 +198,7 @@ class Blockchain {
      * 1. You should validate each block using `validateBlock`
      * 2. Each Block should check the with the previousBlockHash
      */
+    // TODO: implement validateChain()
     validateChain() {
         let self = this;
         let errorLog = [];
@@ -202,4 +209,5 @@ class Blockchain {
 
 }
 
+// TODO: review rubric: https://review.udacity.com/#!/rubrics/2546/view 
 module.exports.Blockchain = Blockchain;

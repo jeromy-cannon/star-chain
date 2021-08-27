@@ -18,6 +18,7 @@ class Block {
     constructor(data) {
         this.hash = null;                                           // Hash of the block
         this.height = 0;                                            // Block Height (consecutive number of each block)
+        // TODO: fix issue with degrees symbol
         console.log('----------------°, ', Buffer.from(JSON.stringify('°')).toString('hex'));
         console.log('zzzzz:' , hex2ascii(Buffer.from(JSON.stringify('°')).toString('hex')));
         this.body = Buffer.from(JSON.stringify(data)).toString('hex');   // Will contain the transactions stored in the block, by default it will encode the data
@@ -52,10 +53,12 @@ class Block {
             // Comparing if the hashes changed
             if (oldHash === currentHash) {
                 // Returning the Block is valid
+                // TODO: from return to resolve
                 return true;
             } else {
                 // Returning the Block is not valid
                 console.log('not valid, oldHash=', oldHash, ', currentHash=', currentHash);
+                // TODO: from return to resolve
                 return false;
             }
         });
@@ -86,6 +89,7 @@ class Block {
                 // Resolve with the data if the object isn't the Genesis block
                 resolve(jsonObject);
             } else {
+                // TODO: add error message to reject
                 reject(decodedData);
             }
         });
