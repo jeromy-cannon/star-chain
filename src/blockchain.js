@@ -71,21 +71,20 @@ class Blockchain {
     _addBlock(block) {
         let self = this;
         return new Promise(async (resolve, reject) => {
-            self.getChainHeight().then(chainHeight => {
-                // console.log('self.chain.length=', self.chain.length, ', chainHeight=', chainHeight);
-                block.time = new Date().getTime().toString().slice(0, -3);
-                block.height = chainHeight + 1;
-                if (chainHeight >= 0) {
-                    block.previousBlockHash = self.chain[chainHeight].hash;
-                }
-                block.hash = SHA256(JSON.stringify(block)).toString();
-                self.chain.push(block);
-                self.height++;
-                resolve(block);
-            }).catch(error => {
+            block.time = new Date().getTime().toString().slice(0, -3);
+            let chainHeight = await self.getChainHeight().catch(error => {
                 console.log('_addBlock > getChainHeight() > Error: ', error);
                 reject('Error: an error ocurred while getting the chain height during the add block process');
             });
+            block.height = chainHeight + 1;
+            if (chainHeight >= 0) {
+                block.previousBlockHash = self.chain[chainHeight].hash;
+            }
+            block.hash = SHA256(JSON.stringify(block)).toString();
+            self.chain.push(block);
+            self.height++;
+            await self.validateChain();
+            resolve(block);
         });
     }
 
@@ -214,8 +213,10 @@ class Blockchain {
         let self = this;
         let errorLog = [];
         return new Promise(async (resolve, reject) => {
+            let previousHash = null;
             self.chain.forEach(async (block) => {
-                await block.validateChain().catch(error => errorLog.push(error));
+                if (!(await block.validate().catch(error => errorLog.push(error)))) errorLog.push('block did not validate, for block.hash=' + block.hash);
+                if (block.height > 0 && previousHash !== block.previousBlockHash) errorLog.push('previousHash does not match, for block.hash=' + block.hash);
             });
             resolve(errorLog);
         });
