@@ -87,7 +87,6 @@ class Block {
                 // Resolve with the data if the object isn't the Genesis block
                 resolve(jsonObject);
             } else {
-                // TODO: add error message to reject
                 reject(decodedData);
             }
         });

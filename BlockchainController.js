@@ -23,7 +23,7 @@ class BlockchainController {
     getBlockByHeight() {
         this.app.get("/block/height/:height", async (req, res) => {
             if (req.params.height) {
-                console.log('current blockchain height: ' + await this.blockchain.getChainHeight());
+                // console.log('current blockchain height: ' + await this.blockchain.getChainHeight());
                 const height = parseInt(req.params.height);
                 let block = await this.blockchain.getBlockByHeight(height);
                 if (block) {
@@ -43,21 +43,23 @@ class BlockchainController {
     requestOwnership() {
         this.app.post("/requestValidation", async (req, res) => {
             //console.log(req);
-            console.log(req.body);
+            console.log('requestValidation > req.body=', req.body);
             if (req.body.address) {
                 const address = req.body.address;
-                console.log('address: ', address);
+                // console.log('address: ', address);
                 const message = await this.blockchain.requestMessageOwnershipVerification(address);
                 if (message) {
-                    console.log('message:', message);
+                    // console.log('message:', message);
                     return res.status(200).json(message);
                 } else {
-                    console.log('error');
-                    return res.status(500).send("An error happened!");
+                    let errorMessage = 'Error: no message found in block';
+                    // console.log(errorMessage);
+                    return res.status(500).send(errorMessage);
                 }
             } else {
-                console.log('bad body');
-                return res.status(500).send("Check the Body Parameter!");
+                let errorMessage = "Check the Body Parameter! No address found.";
+                // console.log(errorMessage)
+                return res.status(500).send(errorMessage);
             }
         });
     }
