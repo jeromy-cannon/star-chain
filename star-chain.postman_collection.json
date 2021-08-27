@@ -52,7 +52,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"address\": \"this-is-my-hash-address\"\r\n}",
+					"raw": "{\r\n    \"address\": \"mp427WsAiYGbgdYLMUj4FmAUXFpBsVRvnW\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -80,11 +80,12 @@
 					"script": {
 						"exec": [
 							"// \"message\": \"<WALLET_ADRESS>:${new Date().getTime().toString().slice(0,-3)}:starRegistry\",\r",
-							"pm.variables.set('wallet-address','tb1qz5jy0fp8fc0peczjh7gwjgz2l3jal5dgakrg9v');\r",
-							"pm.variables.set('timestamp', new Date().getTime().toString().slice(0,-3));\r",
+							"pm.variables.set('wallet-address','mp427WsAiYGbgdYLMUj4FmAUXFpBsVRvnW');\r",
+							"pm.variables.set('timestamp', (new Date().getTime() - (1000 * 60 * 5)).toString().slice(0,-3));\r",
 							"pm.variables.set('message', pm.variables.get('wallet-address') + ':'+ pm.variables.get('timestamp') + ':starRegistry');\r",
+							"pm.variables.set('message', 'mp427WsAiYGbgdYLMUj4FmAUXFpBsVRvnW:1630102887:starRegistry');\r",
 							"console.log('message: ', pm.variables.get('message'));\r",
-							""
+							"pm.variables.set('rand', Math.floor(Math.random()*100));"
 						],
 						"type": "text/javascript"
 					}
@@ -95,7 +96,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"address\": \"my-hash\",\r\n    \"message\": \"{{message}}\",\r\n    \"signature\": \"use a Wallet (Electrum or Bitcoin Core for example) to sign the message\",\r\n    \"star\": {\r\n         \"dec\": \"68° 52' 56.9\",\r\n         \"ra\": \"16h 29m 1.0s\",\r\n         \"story\": \"Testing the story 4\"\r\n     }\r\n}",
+					"raw": "{\r\n    \"address\": \"mp427WsAiYGbgdYLMUj4FmAUXFpBsVRvnW\",\r\n    \"message\": \"{{message}}\",\r\n    \"signature\": \"H3NR9Or3c4Xv0dLlXpE0Ax5Sm2yj6hnM7H/crkyFAadNR4611sN0hS5gs8u0Tk85NYaW+W5NAk//IvoXvqhSAFs=\",\r\n    \"star\": {\r\n         \"dec\": \"68° 52' 56.9\",\r\n         \"ra\": \"16h 29m 1.0s\",\r\n         \"story\": \"Testing the story {{rand}}\"\r\n     }\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -134,7 +135,7 @@
 					"variable": [
 						{
 							"key": "hash",
-							"value": "my-hash"
+							"value": "7525635ce8efa915bd44a87faaedb3ef46d6c619f8e14c69fbc00cc7607461ee"
 						}
 					]
 				}
@@ -159,7 +160,7 @@
 					"variable": [
 						{
 							"key": "address",
-							"value": "my-address"
+							"value": "mp427WsAiYGbgdYLMUj4FmAUXFpBsVRvnW"
 						}
 					]
 				}

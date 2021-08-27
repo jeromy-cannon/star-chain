@@ -18,9 +18,6 @@ class Block {
     constructor(data) {
         this.hash = null;                                           // Hash of the block
         this.height = 0;                                            // Block Height (consecutive number of each block)
-        // FIXME: fix issue with degrees symbol
-        console.log('----------------°, ', Buffer.from(JSON.stringify('°')).toString('hex'));
-        console.log('zzzzz:' , hex2ascii(Buffer.from(JSON.stringify('°')).toString('hex')));
         this.body = Buffer.from(JSON.stringify(data)).toString('hex');   // Will contain the transactions stored in the block, by default it will encode the data
         console.log(hex2ascii(this.body));
         this.time = 0;                                              // Timestamp for the Block creation

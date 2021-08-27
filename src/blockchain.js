@@ -11,6 +11,7 @@
 const SHA256 = require('crypto-js/sha256');
 const BlockClass = require('./block.js');
 const bitcoinMessage = require('bitcoinjs-message');
+const hex2ascii = require('hex2ascii');
 
 class Blockchain {
 
@@ -35,6 +36,11 @@ class Blockchain {
      */
     async initializeChain() {
         if (this.height === -1) {
+            console.log('----------------------------------------------------------------------');
+            // FIXME: fix issue with degrees symbol
+            console.log('----------------°, ', Buffer.from(JSON.stringify('°')).toString('hex'));
+            console.log('zzzzz:', hex2ascii(Buffer.from(JSON.stringify('°')).toString('hex')));
+
             let block = new BlockClass.Block({ data: 'Genesis Block' });
             await this._addBlock(block);
         }
@@ -124,14 +130,19 @@ class Blockchain {
             let timeDifference = currentTime - time;
             console.log('submitted time=', time, ', current time=', currentTime, ', diff=', timeDifference);
             if (timeDifference > (5 * 60)) reject('Error: more than 5 minutes has elapsed beyond owners timestamp within message');
-            if (!bitcoinMessage.verify(message, address, signature)) reject('Error: signature does not match');
+            try {
+                if (!bitcoinMessage.verify(message, address, signature)) reject('Error: signature does not match');
+            } catch (error) {
+                console.log(error);
+                reject('An error was encountered while trying to verify the signature: ' + error.toString());
+            }
             let newBlock = new BlockClass.Block({
                 'address': address,
                 'message': message,
                 'signature': signature,
                 'star': star
             });
-            self._addBlock(newBlock);
+            await self._addBlock(newBlock).catch((error) => reject(error));
             resolve(self.chain[self.chain.length - 1]);
         });
     }
@@ -156,10 +167,14 @@ class Blockchain {
      */
     getBlockByHeight(height) {
         let self = this;
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             let block = self.chain.filter(p => p.height === height)[0];
             if (block) {
-                console.log('getBlockByHeight > block.getBData(): ', block.getBData());
+                try {
+                    console.log('getBlockByHeight > block.getBData(): ', await block.getBData());
+                } catch (error) {
+                    console.log('getBlockByHeight > block.getBData(): ', error);
+                }
                 resolve(block);
             } else {
                 resolve(null);
