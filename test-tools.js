@@ -6,10 +6,11 @@ const app = express();
 const port = 3000;
 
 app.get('/', (req, res) => {
+    testRun();
     res.send('Hello World!');
 });
 
-app.listen(port, () => {
+function testRun() {
     console.log('--------------- test-tools ------------------------');
     // wallet address: 
     var address = process.env.WALLET_ADDRESS;
@@ -23,8 +24,11 @@ app.listen(port, () => {
 
     var signature = bitcoinMessage.sign(message, privateKey, keyPair.compressed);
     // var signature = bitcoinMessage.sign(message, privateKey, false);
-    console.log(signature.toString('base64'));
-    console.log(bitcoinMessage.verify(message, address, signature))
-
-    console.log(`Example app listening at http://localhost:${port}`);
+    console.log('signature=' + signature.toString('base64'));
+    console.log('bitcoinMessage=' + bitcoinMessage.verify(message, address, signature))
+    console.log('---------------------------------------------------');
+}
+app.listen(port, () => {
+    testRun();
+    console.log(`listening at http://localhost:${port}`);
 });
