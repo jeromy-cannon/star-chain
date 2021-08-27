@@ -217,6 +217,7 @@ class Blockchain {
             self.chain.forEach(async (block) => {
                 if (!(await block.validate().catch(error => errorLog.push(error)))) errorLog.push('block did not validate, for block.hash=' + block.hash);
                 if (block.height > 0 && previousHash !== block.previousBlockHash) errorLog.push('previousHash does not match, for block.hash=' + block.hash);
+                previousHash = block.hash;
             });
             resolve(errorLog);
         });
