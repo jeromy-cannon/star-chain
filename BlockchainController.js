@@ -39,7 +39,9 @@ class BlockchainController {
     }
 
     // Endpoint that allows user to request Ownership of a Wallet address (POST Endpoint)
-    // TODO: requestOwnership endpoint
+    // not sure why this is named as such, this just provides a message in the appropriate format
+    // provided an address is given
+    // <WALLET_ADRESS>:${new Date().getTime().toString().slice(0,-3)}:starRegistry;
     requestOwnership() {
         this.app.post("/requestValidation", async (req, res) => {
             //console.log(req);
@@ -52,7 +54,7 @@ class BlockchainController {
                     // console.log('message:', message);
                     return res.status(200).json(message);
                 } else {
-                    let errorMessage = 'Error: no message found in block';
+                    let errorMessage = 'Error: no message was created';
                     // console.log(errorMessage);
                     return res.status(500).send(errorMessage);
                 }
@@ -64,8 +66,9 @@ class BlockchainController {
         });
     }
 
-    // Endpoint that allow Submit a Star, yu need first to `requestOwnership` to have the message (POST endpoint)
-    // TODO: submitStar needs requestOwnership
+    // Endpoint that allow Submit a Star, you need first to `requestOwnership` to have the message (POST endpoint)
+    // a bit weird, but the endpoint is called requestValidation, you give it the address, and it returns a message
+    // you need that message as part of the request body of this call
     submitStar() {
         this.app.post("/submitstar", async (req, res) => {
             if (req.body.address && req.body.message && req.body.signature && req.body.star) {
@@ -73,10 +76,10 @@ class BlockchainController {
                 const message = req.body.message;
                 const signature = req.body.signature;
                 const star = req.body.star;
-                console.log('address: ', address);
-                console.log('message: ', message);
-                console.log('signature: ', signature);
-                console.log('star: ', star);
+                console.log('submitstar > address: ', address);
+                console.log('submitstar > message: ', message);
+                console.log('submitstar > signature: ', signature);
+                console.log('submitstar > star: ', star);
                 try {
                     let block = await this.blockchain.submitStar(address, message, signature, star);
                     if (block) {

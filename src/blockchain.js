@@ -116,7 +116,6 @@ class Blockchain {
      * @param {*} signature 
      * @param {*} star 
      */
-    // TODO: submitStar verify message and reject logic
     submitStar(address, message, signature, star) {
         let self = this;
         return new Promise(async (resolve, reject) => {
@@ -174,11 +173,9 @@ class Blockchain {
      * Remember the star should be returned decoded.
      * @param {*} address 
      */
-    // TODO: reverify stars by wallet address is working
     getStarsByWalletAddress(address) {
         let self = this;
         let stars = [];
-        // TODO: should I create a Star class?
         return new Promise((resolve, reject) => {
             this.chain.slice(1).forEach((block) => {
                 let blockDataPromise = block.getBData();
@@ -203,8 +200,8 @@ class Blockchain {
         let self = this;
         let errorLog = [];
         return new Promise(async (resolve, reject) => {
-            self.chain.forEach( block => {
-                block.vaidateChain().then().catch(error => errorLog.push(error));
+            self.chain.forEach(async (block) => {
+                await block.validateChain().catch(error => errorLog.push(error));
             });
             resolve(errorLog);
         });
