@@ -142,8 +142,7 @@ class Blockchain {
                 'signature': signature,
                 'star': star
             });
-            await self._addBlock(newBlock).catch((error) => reject(error));
-            resolve(self.chain[self.chain.length - 1]);
+            resolve(await self._addBlock(newBlock).catch((error) => reject(error)));
         });
     }
 
