@@ -20,7 +20,7 @@ function testRun() {
 
     var keyPair = bitcoin.ECPair.fromWIF(privateKeyWif, bitcoin.networks.testnet);
     privateKey = keyPair.privateKey;
-    var message = 'mp427WsAiYGbgdYLMUj4FmAUXFpBsVRvnW:1630102887:starRegistry';
+    var message = 'mp427WsAiYGbgdYLMUj4FmAUXFpBsVRvnW:1630338530:starRegistry';
 
     var signature = bitcoinMessage.sign(message, privateKey, keyPair.compressed);
     // var signature = bitcoinMessage.sign(message, privateKey, false);
@@ -30,5 +30,7 @@ function testRun() {
 }
 app.listen(port, () => {
     testRun();
+    process.exit(1);
+
     console.log(`listening at http://localhost:${port}`);
 });
