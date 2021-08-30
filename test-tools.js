@@ -2,8 +2,28 @@ const express = require('express');
 require('dotenv').config();
 const bitcoin = require('bitcoinjs-lib'); // v4.x.x
 const bitcoinMessage = require('bitcoinjs-message');
+const { createLogger, format, transports } = require('winston');
 const app = express();
 const port = 3000;
+
+const logger = createLogger({
+    level: 'info',
+    format: format.combine(
+        format.label({ label: 'test-tools' }),
+        format.timestamp({
+            format: 'YYYYMMDD,HHmmss.SSS'
+        }),
+        format.errors({ stack: true }),
+        format.splat(),
+        format.printf(({ level, message, label, timestamp }) => {
+            return `${timestamp}:[${label}]:${level}: ${message}`;
+        })
+    ),
+    defaultMeta: { service: 'test-tools' },
+    transports: [
+        new transports.Console()
+    ]
+});
 
 app.get('/', (req, res) => {
     testRun();
@@ -11,12 +31,12 @@ app.get('/', (req, res) => {
 });
 
 function testRun() {
-    console.log('--------------- test-tools ------------------------');
+    logger.info('--------------- test-tools ------------------------');
     // wallet address: 
     var address = process.env.WALLET_ADDRESS;
-    console.log('address="' + address + '"');
+    logger.info('address="' + address + '"');
     var privateKeyWif = process.env.PRIVATE_KEY_WIF;
-    console.log('privateKeyWif="' + privateKeyWif + '"');
+    logger.info('privateKeyWif="' + privateKeyWif + '"');
 
     var keyPair = bitcoin.ECPair.fromWIF(privateKeyWif, bitcoin.networks.testnet);
     privateKey = keyPair.privateKey;
@@ -24,13 +44,13 @@ function testRun() {
 
     var signature = bitcoinMessage.sign(message, privateKey, keyPair.compressed);
     // var signature = bitcoinMessage.sign(message, privateKey, false);
-    console.log('signature=' + signature.toString('base64'));
-    console.log('bitcoinMessage=' + bitcoinMessage.verify(message, address, signature))
-    console.log('---------------------------------------------------');
+    logger.info('signature=' + signature.toString('base64'));
+    logger.info('bitcoinMessage=' + bitcoinMessage.verify(message, address, signature))
+    logger.info('---------------------------------------------------');
 }
 app.listen(port, () => {
     testRun();
     process.exit(1);
 
-    console.log(`listening at http://localhost:${port}`);
+    logger.info(`listening at http://localhost:${port}`);
 });
