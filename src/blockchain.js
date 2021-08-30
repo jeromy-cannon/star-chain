@@ -13,6 +13,28 @@ const BlockClass = require('./block.js');
 const bitcoinMessage = require('bitcoinjs-message');
 const hex2ascii = require('hex2ascii');
 
+const { createLogger, format, transports } = require('winston');
+const logger = createLogger({
+    level: 'info',
+    format: format.combine(
+        format.label({ label: 'blockchain' }),
+        format.timestamp({
+            format: 'YYYYMMDD,HHmmss.SSS'
+        }),
+        format.errors({ stack: true }),
+        format.splat(),
+        format.colorize(),
+        format.printf(({ level, message, label, timestamp, stack }) => {
+            if (stack) return `${timestamp}:[${label}]:${level}: ${message} - ${stack}`;
+            return `${timestamp}:[${label}]:${level}: ${message}`;
+        })
+    ),
+    defaultMeta: { service: 'star-chain' },
+    transports: [
+        new transports.Console()
+    ]
+});
+
 class Blockchain {
 
     /**
@@ -36,11 +58,7 @@ class Blockchain {
      */
     async initializeChain() {
         if (this.height === -1) {
-            console.log('----------------------------------------------------------------------');
-            // FIXME: fix issue with degrees symbol
-            console.log('----------------°, ', Buffer.from(JSON.stringify('°')).toString('hex'));
-            console.log('zzzzz:', hex2ascii(Buffer.from(JSON.stringify('°')).toString('hex')));
-
+            logger.info('----------------------------------------------------------------------');
             let block = new BlockClass.Block({ data: 'Genesis Block' });
             await this._addBlock(block);
         }
@@ -73,7 +91,7 @@ class Blockchain {
         return new Promise(async (resolve, reject) => {
             block.time = new Date().getTime().toString().slice(0, -3);
             let chainHeight = await self.getChainHeight().catch(error => {
-                console.log('_addBlock > getChainHeight() > Error: ', error);
+                logger.error('_addBlock > getChainHeight() > Error: ', error);
                 reject('Error: an error ocurred while getting the chain height during the add block process');
             });
             block.height = chainHeight + 1;
@@ -99,7 +117,7 @@ class Blockchain {
     requestMessageOwnershipVerification(address) {
         return new Promise((resolve) => {
             let message = address + ':' + new Date().getTime().toString().slice(0, -3) + ':starRegistry';
-            console.log('requestMessageOwnershipVerification.message=' + message);
+            logger.info('requestMessageOwnershipVerification.message=' + message);
             resolve(message);
         });
     }
@@ -127,12 +145,12 @@ class Blockchain {
             let time = parseInt(message.split(':')[1]);
             let currentTime = parseInt(new Date().getTime().toString().slice(0, -3));
             let timeDifference = currentTime - time;
-            console.log('submitted time=', time, ', current time=', currentTime, ', diff=', timeDifference);
+            logger.info('submitted time=', time, ', current time=', currentTime, ', diff=', timeDifference);
             if (timeDifference > (5 * 60)) reject('Error: more than 5 minutes has elapsed beyond owners timestamp within message');
             try {
                 if (!bitcoinMessage.verify(message, address, signature)) reject('Error: signature does not match');
             } catch (error) {
-                console.log(error);
+                logger.error(error);
                 reject('An error was encountered while trying to verify the signature: ' + error.toString());
             }
             let newBlock = new BlockClass.Block({
@@ -169,9 +187,9 @@ class Blockchain {
             let block = self.chain.filter(p => p.height === height)[0];
             if (block) {
                 try {
-                    console.log('getBlockByHeight > block.getBData(): ', await block.getBData());
+                    logger.info('getBlockByHeight > block.getBData(): ', await block.getBData());
                 } catch (error) {
-                    console.log('getBlockByHeight > block.getBData(): ', error);
+                    logger.error('getBlockByHeight > block.getBData(): ', error);
                 }
                 resolve(block);
             } else {
@@ -193,7 +211,7 @@ class Blockchain {
             this.chain.slice(1).forEach((block) => {
                 let blockDataPromise = block.getBData();
                 blockDataPromise.then(blockData => {
-                    console.log('getStarsByWalletAddress() > address: ', address, ', blockData: ', blockData, ', blockAddress: ', blockData.address);
+                    logger.info('getStarsByWalletAddress() > address: ', address, ', blockData: ', blockData, ', blockAddress: ', blockData.address);
                     if (address === blockData.address) {
                         stars.push(blockData.star);
                     }

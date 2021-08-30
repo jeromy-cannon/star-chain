@@ -2,10 +2,10 @@ const express = require('express');
 require('dotenv').config();
 const bitcoin = require('bitcoinjs-lib'); // v4.x.x
 const bitcoinMessage = require('bitcoinjs-message');
-const { createLogger, format, transports } = require('winston');
 const app = express();
 const port = 3000;
 
+const { createLogger, format, transports } = require('winston');
 const logger = createLogger({
     level: 'info',
     format: format.combine(
@@ -40,7 +40,7 @@ function testRun() {
 
     var keyPair = bitcoin.ECPair.fromWIF(privateKeyWif, bitcoin.networks.testnet);
     privateKey = keyPair.privateKey;
-    var message = 'mp427WsAiYGbgdYLMUj4FmAUXFpBsVRvnW:1630338530:starRegistry';
+    var message = 'mp427WsAiYGbgdYLMUj4FmAUXFpBsVRvnW:1630341597:starRegistry';
 
     var signature = bitcoinMessage.sign(message, privateKey, keyPair.compressed);
     // var signature = bitcoinMessage.sign(message, privateKey, false);

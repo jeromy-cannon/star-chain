@@ -14,6 +14,28 @@ const bodyParser = require("body-parser");
  */
 const BlockChain = require('./src/blockchain.js');
 
+const { createLogger, format, transports } = require('winston');
+const logger = createLogger({
+	level: 'info',
+	format: format.combine(
+		format.label({ label: 'app' }),
+		format.timestamp({
+			format: 'YYYYMMDD,HHmmss.SSS'
+		}),
+		format.errors({ stack: true }),
+		format.splat(),
+		format.colorize(),
+		format.printf(({ level, message, label, timestamp, stack }) => {
+			if (stack) return `${timestamp}:[${label}]:${level}: ${message} - ${stack}`;
+			return `${timestamp}:[${label}]:${level}: ${message}`;
+		})
+	),
+	defaultMeta: { service: 'star-chain' },
+	transports: [
+		new transports.Console()
+	]
+});
+
 class ApplicationServer {
 
 	constructor() {
@@ -37,18 +59,23 @@ class ApplicationServer {
 
 	initExpressMiddleWare() {
 		this.app.use(morgan("dev"));
-		this.app.use(bodyParser.urlencoded({extended:true}));
+		this.app.use(bodyParser.urlencoded({ extended: true }));
 		this.app.use(bodyParser.json());
 	}
 
 	initControllers() {
-        require("./BlockchainController.js")(this.app, this.blockchain);
+		require("./BlockchainController.js")(this.app, this.blockchain);
 	}
 
 	start() {
 		let self = this;
 		this.app.listen(this.app.get("port"), () => {
-			console.log(`Server Listening for port: ${self.app.get("port")}`);
+			logger.debug('debug....');
+			logger.info(`Server Listening for port: ${self.app.get("port")}`);
+			logger.warn('warn...');
+			logger.error('error...');
+			// logger.error(new Error());
+			// logger.error('error... w/', new Error());
 		});
 	}
 

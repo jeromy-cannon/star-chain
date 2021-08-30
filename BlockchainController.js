@@ -1,3 +1,24 @@
+const { createLogger, format, transports } = require('winston');
+const logger = createLogger({
+    level: 'info',
+    format: format.combine(
+        format.label({ label: 'BlockchainController' }),
+        format.timestamp({
+            format: 'YYYYMMDD,HHmmss.SSS'
+        }),
+        format.errors({ stack: true }),
+        format.splat(),
+        format.colorize(),
+        format.printf(({ level, message, label, timestamp, stack }) => {
+            if (stack) return `${timestamp}:[${label}]:${level}: ${message} - ${stack}`;
+            return `${timestamp}:[${label}]:${level}: ${message}`;
+        })
+    ),
+    defaultMeta: { service: 'star-chain' },
+    transports: [
+        new transports.Console()
+    ]
+});
 /**
  *          BlockchainController
  * 
@@ -23,7 +44,7 @@ class BlockchainController {
     getBlockByHeight() {
         this.app.get("/block/height/:height", async (req, res) => {
             if (req.params.height) {
-                // console.log('current blockchain height: ' + await this.blockchain.getChainHeight());
+                // logger.info('current blockchain height: ' + await this.blockchain.getChainHeight());
                 const height = parseInt(req.params.height);
                 let block = await this.blockchain.getBlockByHeight(height);
                 if (block) {
@@ -39,7 +60,7 @@ class BlockchainController {
     }
 
     // endpoint for getting a list of chain errors, or returns an empty array if none are found.
-    getChainErrorList(){
+    getChainErrorList() {
         this.app.get("/chainErrorList", async (req, res) => {
             return res.status(200).json(await this.blockchain.validateChain().catch(error => {
                 return res.status(500).send(error);
@@ -53,23 +74,23 @@ class BlockchainController {
     // <WALLET_ADRESS>:${new Date().getTime().toString().slice(0,-3)}:starRegistry;
     requestOwnership() {
         this.app.post("/requestValidation", async (req, res) => {
-            //console.log(req);
-            console.log('requestValidation > req.body=', req.body);
+            //logger.info(req);
+            logger.info('requestValidation > req.body=' + req.body);
             if (req.body.address) {
                 const address = req.body.address;
-                // console.log('address: ', address);
+                // logger.info('address: ', address);
                 const message = await this.blockchain.requestMessageOwnershipVerification(address);
                 if (message) {
-                    // console.log('message:', message);
+                    // logger.info('message:', message);
                     return res.status(200).json(message);
                 } else {
                     let errorMessage = 'Error: no message was created';
-                    // console.log(errorMessage);
+                    // logger.info(errorMessage);
                     return res.status(500).send(errorMessage);
                 }
             } else {
                 let errorMessage = "Check the Body Parameter! No address found.";
-                // console.log(errorMessage)
+                // logger.info(errorMessage)
                 return res.status(500).send(errorMessage);
             }
         });
@@ -85,10 +106,10 @@ class BlockchainController {
                 const message = req.body.message;
                 const signature = req.body.signature;
                 const star = req.body.star;
-                console.log('submitstar > address: ', address);
-                console.log('submitstar > message: ', message);
-                console.log('submitstar > signature: ', signature);
-                console.log('submitstar > star: ', star);
+                logger.info('submitstar > address: ' + address);
+                logger.info('submitstar > message: ' + message);
+                logger.info('submitstar > signature: ' + signature);
+                logger.info('submitstar > star: ' + star);
                 try {
                     let block = await this.blockchain.submitStar(address, message, signature, star);
                     if (block) {
@@ -110,7 +131,7 @@ class BlockchainController {
         this.app.get("/block/hash/:hash", async (req, res) => {
             if (req.params.hash) {
                 const hash = req.params.hash;
-                console.log('hash: ', hash);
+                logger.info('hash: ' + hash);
                 let block = await this.blockchain.getBlockByHash(hash);
                 if (block) {
                     return res.status(200).json(block);
@@ -129,7 +150,7 @@ class BlockchainController {
         this.app.get("/blocks/:address", async (req, res) => {
             if (req.params.address) {
                 const address = req.params.address;
-                console.log('address: ', address);
+                logger.info('address: ' + address);
                 try {
                     let stars = await this.blockchain.getStarsByWalletAddress(address);
                     if (stars) {
